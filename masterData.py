@@ -12,7 +12,7 @@ print('Now is: ', str(now))
 # Name of Excel file containing all sales data
 EXCEL_MASTER_FILE = 'Sales Report 3-1-2018 - 12-31-2018.xlsx'
 #OUTPUT_FILE = 'alldata' + str(now) + '.xlsx'
-OUTPUT_FILE = 'allData.xlsx'
+OUTPUT_FILE = 'allData.csv'
 
 # Read excel file into DataFrame
 print('Reading data from excel file: '+ EXCEL_MASTER_FILE)
@@ -44,15 +44,35 @@ print('Creating moving average columns for 7D, 14D, 30D, 60D, & 90D windows')
 def rolling_avg(n):
     """returns a column for  a moving n-day average of master_df """
     return master_df.total.rolling(window=n).mean()
-master_df['7Day'] = rolling_avg(7)
-master_df['14Day'] = rolling_avg(14)
-master_df['30Day'] = rolling_avg(30)
-master_df['60Day'] = rolling_avg(60)
-master_df['90Day'] = rolling_avg(90)
-print(master_df.head(100))
+
+master_df['7D_avg'] = rolling_avg(7)
+master_df['14D_avg'] = rolling_avg(14)
+master_df['30D_avg'] = rolling_avg(30)
+master_df['60D_avg'] = rolling_avg(60)
+master_df['90D_avg'] = rolling_avg(90)
+avg_df = master_df[['7D_avg','14D_avg','30D_avg','60D_avg','90D_avg']]
+print(avg_df.head())
+
+
+#plot daily average everyday
+def rolling_total(n):
+    """returns a column of moving n-day totals of master_df"""
+    return master_df.total.rolling(window=n).sum()
+
+master_df['7D_tot'] = rolling_total(7)
+master_df['14D_tot'] = rolling_total(14)
+master_df['30D_tot'] = rolling_total(30)
+master_df['60D_tot'] = rolling_total(60)
+master_df['90D_tot'] = rolling_total(90)
+#tot_df = master_df[master_df.columns[8:13]]
+tot_df = master_df[['total','7D_tot','14D_tot','30D_tot','60D_tot','90D_tot']]
+print(tot_df.head())
+#plot daily average eveymonth
 
 # Plot Totals for each day
-master_df['total'].plot()
+avg_df.plot()
+tot_df.plot(subplots=True)
+master_df.plot(subplots=True)
 plt.show()
 
 # Write data to excelfile
